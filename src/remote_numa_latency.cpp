@@ -51,7 +51,14 @@ public:
     Remote_numa_latency(){
 		// init memory pool on NUMA1, thread 0 on NUMA0 and load/store data on NUMA1.
 		capacity_=BASIC_OP_POOL_SIZE;
-		base_addr_ = (char*)numa_alloc_onnode(BASIC_OP_POOL_SIZE, 1);
+		base_addr_ = (char*)numa_alloc_onnode(BASIC_OP_POOL_SIZE, NUMA_NODE_SHM);
+        if(NUMA_NODE_SHM==0)
+        {
+            std::cout<<"Starting local DRAM test!"<<std::endl; 
+        }
+        else{
+            std::cout<<"Starting remote numa DRAM test!"<<std::endl; 
+        }
         // local_addr_ = (char*)numa_alloc_onnode(BASIC_OP_POOL_SIZE, 0);//给numa0分配1MB内存
         if (((uint64_t)base_addr_ % ALIGNMENT) != 0){
             std::cout << "share_mem is not aligned to 64 bytes" << std::endl;
@@ -88,8 +95,8 @@ void Remote_numa_latency::run(int core_id)
         print_metrics(ret);
 
 
-        worker(bench_func[i],true,CHASING_PTR,&ret);
-        print_metrics(ret);
+        // worker(bench_func[i],true,CHASING_PTR,&ret);
+        // print_metrics(ret);
 
         /*Random*/
    
@@ -97,15 +104,15 @@ void Remote_numa_latency::run(int core_id)
         print_metrics(ret);
 
 
-        worker(bench_func[i],false,CHASING_PTR,&ret);
-        print_metrics(ret);
+        // worker(bench_func[i],false,CHASING_PTR,&ret);
+        // print_metrics(ret);
     }
 }
 
 void Remote_numa_latency::print_metrics(FeedBackUnit ret)
 { 
     uint64_t lat = 0;
-    lat += ret.avg_cycles_;
+    lat += ret.avg_latency;
     
     std::cout << "-------result--------" << std::endl;
     std::cout << ret.work_type_ << " "
@@ -126,7 +133,7 @@ void Remote_numa_latency::worker(void (*wr_method)(void* ), bool seq, TraverseTy
         auto unit_num = capacity_ / sizeof(access_unit_t); // define node numbers of linked list.
         std::vector<uint64_t> traverse_order(unit_num);
     
-        uint64_t total_cycles = 0;
+        std::chrono::nanoseconds total_latency = std::chrono::nanoseconds(0);
         
 		/*define work type*/
 		{
@@ -195,17 +202,24 @@ void Remote_numa_latency::worker(void (*wr_method)(void* ), bool seq, TraverseTy
         {
             auto calc_lat = [&]()
             {
-                uint64_t start_tick, end_tick;
-                start_tick = rdtsc();
+                // uint64_t start_tick, end_tick;
+                // start_tick = rdtsc();
+                
                 for (int i = 0; i < LATENCY_OPS_COUNT; i++)
                 {
                     for (uint64_t j = 0; j < unit_num; j++)
                     {
+                        auto start_ns=std::chrono::high_resolution_clock::now();
+
                         wr_method(work_ptr + traverse_order[j]);
+
+                        auto end_ns = std::chrono::high_resolution_clock::now();
+                        auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end_ns - start_ns);
+                        total_latency += duration;
                     }
                 }
-                end_tick = rdtsc(); 
-                total_cycles = end_tick - start_tick;
+                
+                
             };
 
             auto chase_ptr_lat = [&]()
@@ -215,7 +229,7 @@ void Remote_numa_latency::worker(void (*wr_method)(void* ), bool seq, TraverseTy
                     auto starting_point = work_ptr + random() % unit_num;
                     auto p = starting_point->next;
                     uint64_t start_tick, end_tick;
-                    start_tick = rdtsc();
+                    // start_tick = rdtsc();
                     while (p!=nullptr && p != starting_point)
                     {
 
@@ -226,8 +240,8 @@ void Remote_numa_latency::worker(void (*wr_method)(void* ), bool seq, TraverseTy
                             std::cout<<work_ptr<<std::endl;
                         }
                     }
-                    end_tick = rdtsc();
-                    total_cycles += (end_tick - start_tick);
+                    // end_tick = rdtsc();
+                    // total_cycles += (end_tick - start_tick);
                 }
             };
             
@@ -242,12 +256,12 @@ void Remote_numa_latency::worker(void (*wr_method)(void* ), bool seq, TraverseTy
         }
 
         ret->wss_ = capacity_;
-        ret->avg_cycles_ = total_cycles / LATENCY_OPS_COUNT / unit_num;
+        ret->avg_latency = total_latency.count() / LATENCY_OPS_COUNT / unit_num;
     };
 
 int main()
 {
-    int threads_num=8;
+    int threads_num=1;
     Remote_numa_latency test;
     std::vector<std::thread> local_threads;
     for (int i = 0; i < threads_num; i++){

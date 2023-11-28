@@ -26,11 +26,11 @@ inline uint64_t rdtsc()
     return ((uint64_t)hi << 32) | lo;
 }
 
-#define NPAD 7  /*padding the size of the whole struct*/
+#define NPAD 31  /*padding the size of the whole struct*/
 #define ALIGNMENT 64
 
 #define LATENCY_OPS_COUNT		1L
-#define BASIC_OPS_TASK_COUNT 6 /*不同的访存策略种类，比如store, nt-store……*/
+#define BASIC_OPS_TASK_COUNT 4 /*不同的访存策略种类，比如store, nt-store……*/
 #define PAGE_SHIFT 12 
 #define BASIC_OP_POOL_BITS		30
 #define BASIC_OP_POOL_SIZE		(1L << BASIC_OP_POOL_BITS)  /* Size of the test region */
@@ -38,7 +38,10 @@ inline uint64_t rdtsc()
 #define BASIC_OP_POOL_PAGES (1L << BASIC_OP_POOL_PAGE_BIT) // pages
 #define BASIC_OP_MASK		0x3FFFFFC0 /*0b1{24, POOL_LINE_BITS}0{6, CACHELINE_BITS} */
 #define NUMA_NODE_SHM 1
-#define THREADS_NUMBER 8
+#define THREADS_NUMBER 1
+
+#define ROUND_DOWN(x, y) ((x) & ~(y - 1))
+
 
 struct access_unit_t  /* the size of access_unit_t is 64 bytes: 8*7+8=64, which is the same as cacheline */
 {
@@ -57,7 +60,8 @@ struct FeedBackUnit
     std::string work_type_;
     std::string order_;
     std::string traverse_type_;
-    uint64_t wss_, avg_latency, avg_bandwidth;
+    uint64_t wss_=0, avg_latency, avg_bandwidth;
+    std::chrono::nanoseconds total_latency = std::chrono::nanoseconds(0);
 };
 
 
@@ -93,21 +97,23 @@ void wr_nt(void *addr)
 
 }
 
-void clf_load(int* src) {
+void clf_load(char* src) {
 
     _mm_clflush(src); 
     loaded_data = _mm512_load_si512((__m512i*)src);
+    _mm_sfence();
 }
 
-void load(int* src) {
+void load(char* src) {
 
     loaded_data = _mm512_load_si512((__m512i*)src);
+    _mm_sfence();
 }
 
 
 void (*bench_func[BASIC_OPS_TASK_COUNT])(void *) = {
-    &wr_clwb_sfence,
-    &wr_clwb,
+    // &wr_clwb_sfence,
+    // &wr_clwb,
     &wr_nt_sfence,
     &wr_nt,
     &clf_load,
