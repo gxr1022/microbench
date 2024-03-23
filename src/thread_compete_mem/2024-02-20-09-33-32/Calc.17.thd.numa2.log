@@ -1,0 +1,98 @@
+17 threads excute memory test.
+Starting remote numa DRAM test!
+-------result--------
+[type]:[clwb sfence] [Trav]:[Calc] [order]:[seq]
+[work set size]: [280950016](bytes)
+[unit num]: [4194304](op)
+[Latency]: [25](ns)
+[Bandwidth_ops]: [40000000](ops)
+[Bandwidth_mbs]: [2560](MB/s)
+---------------------
+-------result--------
+[type]:[clwb] [Trav]:[Calc] [order]:[seq]
+[work set size]: [287122240](bytes)
+[unit num]: [4194304](op)
+[Latency]: [59](ns)
+[Bandwidth_ops]: [16949152](ops)
+[Bandwidth_mbs]: [1084](MB/s)
+---------------------
+-------result--------
+[type]:[nt store sfence] [Trav]:[Calc] [order]:[seq]
+[work set size]: [280994752](bytes)
+[unit num]: [4194304](op)
+[Latency]: [9](ns)
+[Bandwidth_ops]: [111111111](ops)
+[Bandwidth_mbs]: [7111](MB/s)
+---------------------
+-------result--------
+[type]:[nt store] [Trav]:[Calc] [order]:[seq]
+[work set size]: [281495104](bytes)
+[unit num]: [4194304](op)
+[Latency]: [9](ns)
+[Bandwidth_ops]: [111111111](ops)
+[Bandwidth_mbs]: [7111](MB/s)
+---------------------
+-------result--------
+[type]:[clf_load] [Trav]:[Calc] [order]:[seq]
+[work set size]: [290359552](bytes)
+[unit num]: [4194304](op)
+[Latency]: [37](ns)
+[Bandwidth_ops]: [27027027](ops)
+[Bandwidth_mbs]: [1729](MB/s)
+---------------------
+-------result--------
+[type]:[load] [Trav]:[Calc] [order]:[seq]
+[work set size]: [300388928](bytes)
+[unit num]: [4194304](op)
+[Latency]: [37](ns)
+[Bandwidth_ops]: [27027027](ops)
+[Bandwidth_mbs]: [1729](MB/s)
+---------------------
+-------result--------
+[type]:[clwb sfence] [Trav]:[Calc] [order]:[rand]
+[work set size]: [280374976](bytes)
+[unit num]: [4194304](op)
+[Latency]: [62](ns)
+[Bandwidth_ops]: [16129032](ops)
+[Bandwidth_mbs]: [1032](MB/s)
+---------------------
+-------result--------
+[type]:[clwb] [Trav]:[Calc] [order]:[rand]
+[work set size]: [282639936](bytes)
+[unit num]: [4194304](op)
+[Latency]: [57](ns)
+[Bandwidth_ops]: [17543859](ops)
+[Bandwidth_mbs]: [1122](MB/s)
+---------------------
+-------result--------
+[type]:[nt store sfence] [Trav]:[Calc] [order]:[rand]
+[work set size]: [279039616](bytes)
+[unit num]: [4194304](op)
+[Latency]: [9](ns)
+[Bandwidth_ops]: [111111111](ops)
+[Bandwidth_mbs]: [7111](MB/s)
+---------------------
+-------result--------
+[type]:[nt store] [Trav]:[Calc] [order]:[rand]
+[work set size]: [282065088](bytes)
+[unit num]: [4194304](op)
+[Latency]: [10](ns)
+[Bandwidth_ops]: [100000000](ops)
+[Bandwidth_mbs]: [6400](MB/s)
+---------------------
+-------result--------
+[type]:[clf_load] [Trav]:[Calc] [order]:[rand]
+[work set size]: [282121792](bytes)
+[unit num]: [4194304](op)
+[Latency]: [57](ns)
+[Bandwidth_ops]: [17543859](ops)
+[Bandwidth_mbs]: [1122](MB/s)
+---------------------
+-------result--------
+[type]:[load] [Trav]:[Calc] [order]:[rand]
+[work set size]: [287755904](bytes)
+[unit num]: [4194304](op)
+[Latency]: [49](ns)
+[Bandwidth_ops]: [20408163](ops)
+[Bandwidth_mbs]: [1306](MB/s)
+---------------------

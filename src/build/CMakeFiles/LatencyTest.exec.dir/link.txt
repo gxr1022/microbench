@@ -1,0 +1,1 @@
+/usr/bin/c++ -march=native -g -rdynamic CMakeFiles/LatencyTest.exec.dir/multi_thread_wss_numa_latency.o -o LatencyTest.exec   -L/usr/local/lib  -lnuma /usr/local/lib/libgflags.a 

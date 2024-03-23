@@ -1,0 +1,49 @@
+Starting local DRAM test!
+-------result--------
+[type]:[clwb sfence] [Trav]:[Calc] [order]:[seq]
+Latency: [107](CPU cycle)
+---------------------
+-------result--------
+[type]:[clwb sfence] [Trav]:[Calc] [order]:[rand]
+Latency: [106](CPU cycle)
+---------------------
+-------result--------
+[type]:[clwb] [Trav]:[Calc] [order]:[seq]
+Latency: [8](CPU cycle)
+---------------------
+-------result--------
+[type]:[clwb] [Trav]:[Calc] [order]:[rand]
+Latency: [21](CPU cycle)
+---------------------
+-------result--------
+[type]:[nt store sfence] [Trav]:[Calc] [order]:[seq]
+Latency: [156](CPU cycle)
+---------------------
+-------result--------
+[type]:[nt store sfence] [Trav]:[Calc] [order]:[rand]
+Latency: [157](CPU cycle)
+---------------------
+-------result--------
+[type]:[nt store] [Trav]:[Calc] [order]:[seq]
+Latency: [4](CPU cycle)
+---------------------
+-------result--------
+[type]:[nt store] [Trav]:[Calc] [order]:[rand]
+Latency: [8](CPU cycle)
+---------------------
+-------result--------
+[type]:[clf_load] [Trav]:[Calc] [order]:[seq]
+Latency: [65](CPU cycle)
+---------------------
+-------result--------
+[type]:[clf_load] [Trav]:[Calc] [order]:[rand]
+Latency: [64](CPU cycle)
+---------------------
+-------result--------
+[type]:[load] [Trav]:[Calc] [order]:[seq]
+Latency: [6](CPU cycle)
+---------------------
+-------result--------
+[type]:[load] [Trav]:[Calc] [order]:[rand]
+Latency: [21](CPU cycle)
+---------------------

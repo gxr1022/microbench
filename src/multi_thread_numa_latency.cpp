@@ -101,11 +101,11 @@ public:
 
 
     Remote_numa_latency(){
-        threads_num= THREADS_NUMBER;
+        threads_num= FLAGS_thread_number;
 		// init memory pool on NUMA1, thread 0 on NUMA0 and load/store data on NUMA1.
-		capacity_=BASIC_OP_POOL_SIZE;
-		base_addr_ = (char*)numa_alloc_onnode(BASIC_OP_POOL_SIZE, NUMA_NODE_SHM);
-        if(NUMA_NODE_SHM==0)
+		capacity_=1<<FLAGS_pool_bits;
+		base_addr_ = (char*)numa_alloc_onnode(1<<FLAGS_pool_bits, FLAGS_numa_node);
+        if(FLAGS_numa_node==0)
         {
             std::cout<<"Starting local DRAM test!"<<std::endl; 
         }
@@ -115,10 +115,10 @@ public:
         // local_addr_ = (char*)numa_alloc_onnode(BASIC_OP_POOL_SIZE, 0);//给numa0分配1MB内存
         if (((uint64_t)base_addr_ % ALIGNMENT) != 0){
             std::cout << "share_mem is not aligned to 64 bytes" << std::endl;
-            numa_free(base_addr_, BASIC_OP_POOL_SIZE);
+            numa_free(base_addr_, 1<<FLAGS_pool_bits);
             exit;
         }
-		memset(base_addr_, 0, BASIC_OP_POOL_SIZE);	
+		memset(base_addr_, 0, 1<<FLAGS_pool_bits);	
         ptr_chase = (access_unit_t *)base_addr_;
         // memset(local_addr_, 0, BASIC_OP_POOL_SIZE);
 	}
@@ -130,7 +130,7 @@ public:
     void print_metrics(FeedBackUnit ret);
 
 	~Remote_numa_latency(){
-        numa_free(base_addr_, BASIC_OP_POOL_SIZE);
+        numa_free(base_addr_, 1<<FLAGS_pool_bits);
     }
 
 };
@@ -187,23 +187,25 @@ void Remote_numa_latency::run_one_type(bool seq, TraverseType trav_tp)
         }
 
 
-
         /*global variables*/
         ptr_chase = work_ptr->next;
 
         std::vector<std::thread> local_threads;
-        for (int i = 0; i < THREADS_NUMBER; i++){
+        // std::vector<int> threads_mapping={0, 1 ,2 ,3, 4, 5, 6 ,7, 8 ,9, 10, 11, 24, 25, 26, 27, 28 ,29, 30,31, 32 ,33, 34, 35};
+        std::vector<int> threads_mapping={12, 13 ,14 ,15, 16, 17 ,18 ,19, 20, 21 ,22, 23 ,36 ,37, 38 ,39, 40 ,41 ,42 ,43, 44, 45, 46 ,47};
+
+        for (int i = 0; i < threads_num; i++){
             local_threads.push_back(std::thread(
-                [this, &ret, k,i, seq, trav_tp,traverse_order, unit_num, work_ptr]() {
-                    this->worker(bench_func[k], trav_tp, &ret, i,traverse_order, unit_num, work_ptr);
+                [this, &ret, k,i, threads_mapping, seq, trav_tp,traverse_order, unit_num, work_ptr]() {
+                    this->worker(bench_func[k], trav_tp, &ret,threads_mapping[i],traverse_order, unit_num, work_ptr);
                 }));
         }
-        for (int i = 0; i < THREADS_NUMBER; i++){
+        for (int i = 0; i < threads_num; i++){
             local_threads[i].join();
         }
         /*平均每个操作的延迟 & 多个线程总带宽*/
         // ret.avg_latency = (uint64_t)total_latency.count() / LATENCY_OPS_COUNT /unit_num/ threads_num; //用所有访问操作的总延迟/访问操作数/线程数目
-        ret.avg_latency = (uint64_t)ret.total_latency.count() / LATENCY_OPS_COUNT /unit_num/ THREADS_NUMBER;
+        ret.avg_latency = (uint64_t)ret.total_latency.count() / LATENCY_OPS_COUNT /unit_num/ threads_num;
         
         ret.avg_bandwidth = 1000000000.0/ret.avg_latency; 
         print_metrics(ret);
@@ -213,10 +215,17 @@ void Remote_numa_latency::run_one_type(bool seq, TraverseType trav_tp)
 
 void Remote_numa_latency::run()
 {
-    // run_one_type(true,CALC_OFFSET);
-    // run_one_type(false,CALC_OFFSET);
-    run_one_type(true,CHASING_PTR);
-    run_one_type(false,CHASING_PTR);
+    if(FLAGS_traverse_type==false)
+    {
+        run_one_type(true,CALC_OFFSET);
+        run_one_type(false,CALC_OFFSET);
+    }
+    else 
+    {
+        run_one_type(true,CHASING_PTR);
+        run_one_type(false,CHASING_PTR);
+    }
+    
     
 }
 
@@ -233,19 +242,19 @@ void Remote_numa_latency::print_metrics(FeedBackUnit ret)
     std::cout << ret.work_type_ << " "
                 << ret.traverse_type_ << " "
                 << ret.order_ << std::endl;
-    std::cout <<"work set size: ["
+    std::cout <<"[work set size]: ["
                 << ret.wss_
                 << "](bytes)" << std::endl;
-    std::cout <<"unit num: ["
+    std::cout <<"[unit num]: ["
                 << capacity_/sizeof(access_unit_t)
                 << "](op)" << std::endl;
-    std::cout <<"Latency: ["
+    std::cout <<"[Latency]: ["
                 << lat
                 << "](ns)" << std::endl;
-    std::cout <<"Bandwidth: ["
+    std::cout <<"[Bandwidth_ops]: ["
                 << bw
                 << "](ops)" << std::endl;
-    std::cout <<"Bandwidth: ["
+    std::cout <<"[Bandwidth_mbs]: ["
                 << bw_MB
                 << "](MB/s)" << std::endl;
     std::cout << "---------------------" << std::endl;
@@ -360,22 +369,15 @@ void Remote_numa_latency::worker(void (*wr_method)(void* ), TraverseType trav_tp
                 calc_lat();
             }
         }
-
-        
     };
 
-int main()
+int main(int argc, char **argv)
 {
-
+    gflags::ParseCommandLineFlags(&argc, &argv, true);
+    std::cout<<FLAGS_thread_number<<" threads excute memory test."<<std::endl;
     Remote_numa_latency test;
     test.run();
-    // std::vector<std::thread> local_threads;
-    // for (int i = 0; i < THREADS_NUMBER; i++){
-    //     local_threads.push_back(std::thread(&Remote_numa_latency::run,&test,i));
-    // }
-    // for (int i = 0; i < THREADS_NUMBER; i++){
-    //     local_threads[i].join();
-    // }
+    
 	return 0;
 
 }

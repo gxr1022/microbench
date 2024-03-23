@@ -1,0 +1,7 @@
+类型,Trav,Order,延迟(ns),带宽(ops),带宽(MB/s)
+clwb sfence,Calc,rand,128,7812500,500
+clwb,Calc,rand,128,7812500,500
+nt store sfence,Calc,rand,56,17857142,1142
+nt store,Calc,rand,56,17857142,1142
+clf_load,Calc,rand,131,7633587,488
+load,Calc,rand,128,7812500,500

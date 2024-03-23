@@ -1,0 +1,3 @@
+/home/gxr/cxl_mem/microbench/src/build/CMakeFiles/LatencyTest.exec.dir
+/home/gxr/cxl_mem/microbench/src/build/CMakeFiles/edit_cache.dir
+/home/gxr/cxl_mem/microbench/src/build/CMakeFiles/rebuild_cache.dir

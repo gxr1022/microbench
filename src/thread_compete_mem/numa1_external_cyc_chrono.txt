@@ -1,0 +1,49 @@
+Starting remote numa DRAM test!
+-------result--------
+[type]:[clwb sfence] [Trav]:[Calc] [order]:[seq]
+Latency: [224](CPU cycle)
+---------------------
+-------result--------
+[type]:[clwb sfence] [Trav]:[Calc] [order]:[rand]
+Latency: [227](CPU cycle)
+---------------------
+-------result--------
+[type]:[clwb] [Trav]:[Calc] [order]:[seq]
+Latency: [10](CPU cycle)
+---------------------
+-------result--------
+[type]:[clwb] [Trav]:[Calc] [order]:[rand]
+Latency: [29](CPU cycle)
+---------------------
+-------result--------
+[type]:[nt store sfence] [Trav]:[Calc] [order]:[seq]
+Latency: [283](CPU cycle)
+---------------------
+-------result--------
+[type]:[nt store sfence] [Trav]:[Calc] [order]:[rand]
+Latency: [283](CPU cycle)
+---------------------
+-------result--------
+[type]:[nt store] [Trav]:[Calc] [order]:[seq]
+Latency: [3](CPU cycle)
+---------------------
+-------result--------
+[type]:[nt store] [Trav]:[Calc] [order]:[rand]
+Latency: [8](CPU cycle)
+---------------------
+-------result--------
+[type]:[clf_load] [Trav]:[Calc] [order]:[seq]
+Latency: [68](CPU cycle)
+---------------------
+-------result--------
+[type]:[clf_load] [Trav]:[Calc] [order]:[rand]
+Latency: [67](CPU cycle)
+---------------------
+-------result--------
+[type]:[load] [Trav]:[Calc] [order]:[seq]
+Latency: [9](CPU cycle)
+---------------------
+-------result--------
+[type]:[load] [Trav]:[Calc] [order]:[rand]
+Latency: [28](CPU cycle)
+---------------------

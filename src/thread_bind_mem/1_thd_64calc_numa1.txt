@@ -1,0 +1,85 @@
+Starting remote numa DRAM test!
+-------result--------
+[type]:[clwb sfence] [Trav]:[Calc] [order]:[seq]
+work set size: [1073741824](bytes)
+Latency: [26](ns)
+Bandwidth: [38461538](ops)
+Bandwidth: [2461](MB/s)
+---------------------
+-------result--------
+[type]:[clwb] [Trav]:[Calc] [order]:[seq]
+work set size: [1073741824](bytes)
+Latency: [25](ns)
+Bandwidth: [40000000](ops)
+Bandwidth: [2560](MB/s)
+---------------------
+-------result--------
+[type]:[nt store sfence] [Trav]:[Calc] [order]:[seq]
+work set size: [1073741824](bytes)
+Latency: [23](ns)
+Bandwidth: [43478260](ops)
+Bandwidth: [2782](MB/s)
+---------------------
+-------result--------
+[type]:[nt store] [Trav]:[Calc] [order]:[seq]
+work set size: [1073741824](bytes)
+Latency: [21](ns)
+Bandwidth: [47619047](ops)
+Bandwidth: [3047](MB/s)
+---------------------
+-------result--------
+[type]:[clf_load] [Trav]:[Calc] [order]:[seq]
+work set size: [1073741824](bytes)
+Latency: [49](ns)
+Bandwidth: [20408163](ops)
+Bandwidth: [1306](MB/s)
+---------------------
+-------result--------
+[type]:[load] [Trav]:[Calc] [order]:[seq]
+work set size: [1073741824](bytes)
+Latency: [22](ns)
+Bandwidth: [45454545](ops)
+Bandwidth: [2909](MB/s)
+---------------------
+-------result--------
+[type]:[clwb sfence] [Trav]:[Calc] [order]:[rand]
+work set size: [1073741824](bytes)
+Latency: [202](ns)
+Bandwidth: [4950495](ops)
+Bandwidth: [316](MB/s)
+---------------------
+-------result--------
+[type]:[clwb] [Trav]:[Calc] [order]:[rand]
+work set size: [1073741824](bytes)
+Latency: [201](ns)
+Bandwidth: [4975124](ops)
+Bandwidth: [318](MB/s)
+---------------------
+-------result--------
+[type]:[nt store sfence] [Trav]:[Calc] [order]:[rand]
+work set size: [1073741824](bytes)
+Latency: [42](ns)
+Bandwidth: [23809523](ops)
+Bandwidth: [1523](MB/s)
+---------------------
+-------result--------
+[type]:[nt store] [Trav]:[Calc] [order]:[rand]
+work set size: [1073741824](bytes)
+Latency: [38](ns)
+Bandwidth: [26315789](ops)
+Bandwidth: [1684](MB/s)
+---------------------
+-------result--------
+[type]:[clf_load] [Trav]:[Calc] [order]:[rand]
+work set size: [1073741824](bytes)
+Latency: [205](ns)
+Bandwidth: [4878048](ops)
+Bandwidth: [312](MB/s)
+---------------------
+-------result--------
+[type]:[load] [Trav]:[Calc] [order]:[rand]
+work set size: [1073741824](bytes)
+Latency: [210](ns)
+Bandwidth: [4761904](ops)
+Bandwidth: [304](MB/s)
+---------------------

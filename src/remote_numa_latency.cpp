@@ -50,9 +50,9 @@ public:
 
     Remote_numa_latency(){
 		// init memory pool on NUMA1, thread 0 on NUMA0 and load/store data on NUMA1.
-		capacity_=BASIC_OP_POOL_SIZE;
-		base_addr_ = (char*)numa_alloc_onnode(BASIC_OP_POOL_SIZE, NUMA_NODE_SHM);
-        if(NUMA_NODE_SHM==0)
+		capacity_=1<<FLAGS_pool_bits;
+		base_addr_ = (char*)numa_alloc_onnode(1<<FLAGS_pool_bits, FLAGS_numa_node);
+        if(FLAGS_numa_node==0)
         {
             std::cout<<"Starting local DRAM test!"<<std::endl; 
         }
@@ -62,10 +62,10 @@ public:
         // local_addr_ = (char*)numa_alloc_onnode(BASIC_OP_POOL_SIZE, 0);//给numa0分配1MB内存
         if (((uint64_t)base_addr_ % ALIGNMENT) != 0){
             std::cout << "share_mem is not aligned to 64 bytes" << std::endl;
-            numa_free(base_addr_, BASIC_OP_POOL_SIZE);
+            numa_free(base_addr_, capacity_);
             exit;
         }
-		memset(base_addr_, 0, BASIC_OP_POOL_SIZE);	
+		memset(base_addr_, 0, capacity_);	
         // memset(local_addr_, 0, BASIC_OP_POOL_SIZE);
 	}
 	
@@ -75,7 +75,7 @@ public:
     void print_metrics(FeedBackUnit ret);
 
 	~Remote_numa_latency(){
-        numa_free(base_addr_, BASIC_OP_POOL_SIZE);
+        numa_free(base_addr_, capacity_);
     }
 
 };
@@ -88,40 +88,58 @@ void Remote_numa_latency::run(int core_id)
 
     for (int i = 0; i < BASIC_OPS_TASK_COUNT; i++)
     {
-        FeedBackUnit ret;
+        
+        if(FLAGS_traverse_type==false)
+        {
+            /*Sequential*/
+            FeedBackUnit ret1;
+            worker(bench_func[i],true,CALC_OFFSET,&ret1);
+            print_metrics(ret1);
 
-        /*Sequential*/
-        worker(bench_func[i],true,CALC_OFFSET,&ret);
-        print_metrics(ret);
+            /*Random*/
+            FeedBackUnit ret3;
+            worker(bench_func[i],false,CALC_OFFSET,&ret3);
+            print_metrics(ret3);
+        }
+        else
+        {
+            FeedBackUnit ret2;
+            worker(bench_func[i],true,CHASING_PTR,&ret2);
+            print_metrics(ret2);
 
+            FeedBackUnit ret4;
+            worker(bench_func[i],false,CHASING_PTR,&ret4);
+            print_metrics(ret4);
+        }
 
-        // worker(bench_func[i],true,CHASING_PTR,&ret);
-        // print_metrics(ret);
-
-        /*Random*/
-   
-        worker(bench_func[i],false,CALC_OFFSET,&ret);
-        print_metrics(ret);
-
-
-        // worker(bench_func[i],false,CHASING_PTR,&ret);
-        // print_metrics(ret);
+        
     }
 }
 
 void Remote_numa_latency::print_metrics(FeedBackUnit ret)
 { 
-    uint64_t lat = 0;
-    lat += ret.avg_latency;
+    uint64_t lat = 0, bw=0;
+    lat = ret.avg_latency;
+    // bw =ret.avg_bandwidth*1000.0;
+    bw = 64*1000.0/lat;
     
     std::cout << "-------result--------" << std::endl;
     std::cout << ret.work_type_ << " "
                 << ret.traverse_type_ << " "
                 << ret.order_ << std::endl;
+    std::cout <<"[work set size]: ["
+                << ret.wss_
+                << "](bytes)" << std::endl;
 
-    std::cout <<"Latency: ["
+    std::cout <<"[Latency]: ["
                 << lat
-                << "](CPU cycle)" << std::endl;
+                << "](ns)" << std::endl;
+    // std::cout <<"[Bandwidth_ops]: ["
+    //             << bw
+    //             << "](ops)" << std::endl;
+    std::cout <<"[Bandwidth_mbs]: ["
+                << bw
+                << "](MB/s)" << std::endl;
     std::cout << "---------------------" << std::endl;
         
 }
@@ -133,7 +151,8 @@ void Remote_numa_latency::worker(void (*wr_method)(void* ), bool seq, TraverseTy
         auto unit_num = capacity_ / sizeof(access_unit_t); // define node numbers of linked list.
         std::vector<uint64_t> traverse_order(unit_num);
     
-        std::chrono::nanoseconds total_latency = std::chrono::nanoseconds(0);
+        // std::chrono::nanoseconds total_latency = std::chrono::nanoseconds(0);
+        // uint64_t total_latency=0;
         
 		/*define work type*/
 		{
@@ -204,6 +223,7 @@ void Remote_numa_latency::worker(void (*wr_method)(void* ), bool seq, TraverseTy
             {
                 // uint64_t start_tick, end_tick;
                 // start_tick = rdtsc();
+                // auto start_ns=std::chrono::high_resolution_clock::now();
                 
                 for (int i = 0; i < LATENCY_OPS_COUNT; i++)
                 {
@@ -215,10 +235,17 @@ void Remote_numa_latency::worker(void (*wr_method)(void* ), bool seq, TraverseTy
 
                         auto end_ns = std::chrono::high_resolution_clock::now();
                         auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end_ns - start_ns);
-                        total_latency += duration;
+                        ret->total_latency += duration;
+                        ret->wss_ +=64;
+                        
                     }
                 }
-                
+                // end_tick = rdtsc();
+                // total_latency = end_tick - start_tick;
+                // auto end_ns = std::chrono::high_resolution_clock::now();
+                // auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end_ns - start_ns);
+                // total_latency = duration;
+
                 
             };
 
@@ -228,12 +255,17 @@ void Remote_numa_latency::worker(void (*wr_method)(void* ), bool seq, TraverseTy
                 {
                     auto starting_point = work_ptr + random() % unit_num;
                     auto p = starting_point->next;
-                    uint64_t start_tick, end_tick;
+                    // uint64_t start_tick, end_tick;
                     // start_tick = rdtsc();
                     while (p!=nullptr && p != starting_point)
                     {
-
+                        auto start_ns=std::chrono::high_resolution_clock::now();
                         wr_method(&p->pad[15]);
+                        auto end_ns = std::chrono::high_resolution_clock::now();
+                        auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end_ns - start_ns);
+                        ret->total_latency += duration;
+                        ret->wss_ +=64;
+                        
                         p = p->next;
                         if(!p)
                         {
@@ -256,11 +288,14 @@ void Remote_numa_latency::worker(void (*wr_method)(void* ), bool seq, TraverseTy
         }
 
         ret->wss_ = capacity_;
-        ret->avg_latency = total_latency.count() / LATENCY_OPS_COUNT / unit_num;
+        ret->avg_latency = (uint64_t)ret->total_latency.count() / LATENCY_OPS_COUNT / unit_num;
+        ret->avg_bandwidth=unit_num*64/ret->total_latency.count()*1.0;
     };
 
-int main()
+int main(int argc, char **argv)
 {
+    gflags::ParseCommandLineFlags(&argc, &argv, true);
+    std::cout<<FLAGS_thread_number<<" threads excute memory test."<<std::endl;
     int threads_num=1;
     Remote_numa_latency test;
     std::vector<std::thread> local_threads;

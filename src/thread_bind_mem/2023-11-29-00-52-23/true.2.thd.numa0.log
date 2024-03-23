@@ -1,0 +1,86 @@
+2 threads excute memory test.
+Starting local DRAM test!
+-------result--------
+[type]:[clwb sfence] [Trav]:[Ptr] [order]:[seq]
+work set size: [268435456](bytes)
+Latency: [10](ns)
+Bandwidth: [100000000](ops)
+Bandwidth: [6400](MB/s)
+---------------------
+-------result--------
+[type]:[clwb] [Trav]:[Ptr] [order]:[seq]
+work set size: [268435456](bytes)
+Latency: [9](ns)
+Bandwidth: [111111111](ops)
+Bandwidth: [7111](MB/s)
+---------------------
+-------result--------
+[type]:[nt store sfence] [Trav]:[Ptr] [order]:[seq]
+work set size: [268435456](bytes)
+Latency: [9](ns)
+Bandwidth: [111111111](ops)
+Bandwidth: [7111](MB/s)
+---------------------
+-------result--------
+[type]:[nt store] [Trav]:[Ptr] [order]:[seq]
+work set size: [268435456](bytes)
+Latency: [9](ns)
+Bandwidth: [111111111](ops)
+Bandwidth: [7111](MB/s)
+---------------------
+-------result--------
+[type]:[clf_load] [Trav]:[Ptr] [order]:[seq]
+work set size: [268435456](bytes)
+Latency: [10](ns)
+Bandwidth: [100000000](ops)
+Bandwidth: [6400](MB/s)
+---------------------
+-------result--------
+[type]:[load] [Trav]:[Ptr] [order]:[seq]
+work set size: [268435456](bytes)
+Latency: [9](ns)
+Bandwidth: [111111111](ops)
+Bandwidth: [7111](MB/s)
+---------------------
+-------result--------
+[type]:[clwb sfence] [Trav]:[Ptr] [order]:[rand]
+work set size: [268435456](bytes)
+Latency: [65](ns)
+Bandwidth: [15384615](ops)
+Bandwidth: [984](MB/s)
+---------------------
+-------result--------
+[type]:[clwb] [Trav]:[Ptr] [order]:[rand]
+work set size: [268435456](bytes)
+Latency: [65](ns)
+Bandwidth: [15384615](ops)
+Bandwidth: [984](MB/s)
+---------------------
+-------result--------
+[type]:[nt store sfence] [Trav]:[Ptr] [order]:[rand]
+work set size: [268435456](bytes)
+Latency: [15](ns)
+Bandwidth: [66666666](ops)
+Bandwidth: [4266](MB/s)
+---------------------
+-------result--------
+[type]:[nt store] [Trav]:[Ptr] [order]:[rand]
+work set size: [268435456](bytes)
+Latency: [14](ns)
+Bandwidth: [71428571](ops)
+Bandwidth: [4571](MB/s)
+---------------------
+-------result--------
+[type]:[clf_load] [Trav]:[Ptr] [order]:[rand]
+work set size: [268435456](bytes)
+Latency: [67](ns)
+Bandwidth: [14925373](ops)
+Bandwidth: [955](MB/s)
+---------------------
+-------result--------
+[type]:[load] [Trav]:[Ptr] [order]:[rand]
+work set size: [268435456](bytes)
+Latency: [68](ns)
+Bandwidth: [14705882](ops)
+Bandwidth: [941](MB/s)
+---------------------

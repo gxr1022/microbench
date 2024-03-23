@@ -1,0 +1,65 @@
+Starting remote numa DRAM test!
+-------result--------
+[type]:[nt store sfence] [Trav]:[Ptr] [order]:[seq]
+work set size: [268435392](bytes)
+unit num: [4194304](op)
+Latency: [18](ns)
+Bandwidth: [55555555](ops)
+Bandwidth: [3555](MB/s)
+---------------------
+-------result--------
+[type]:[nt store] [Trav]:[Ptr] [order]:[seq]
+work set size: [268435392](bytes)
+unit num: [4194304](op)
+Latency: [18](ns)
+Bandwidth: [55555555](ops)
+Bandwidth: [3555](MB/s)
+---------------------
+-------result--------
+[type]:[clf_load] [Trav]:[Ptr] [order]:[seq]
+work set size: [268435392](bytes)
+unit num: [4194304](op)
+Latency: [20](ns)
+Bandwidth: [50000000](ops)
+Bandwidth: [3200](MB/s)
+---------------------
+-------result--------
+[type]:[load] [Trav]:[Ptr] [order]:[seq]
+work set size: [268435392](bytes)
+unit num: [4194304](op)
+Latency: [20](ns)
+Bandwidth: [50000000](ops)
+Bandwidth: [3200](MB/s)
+---------------------
+-------result--------
+[type]:[nt store sfence] [Trav]:[Ptr] [order]:[rand]
+work set size: [268435392](bytes)
+unit num: [4194304](op)
+Latency: [36](ns)
+Bandwidth: [27777777](ops)
+Bandwidth: [1777](MB/s)
+---------------------
+-------result--------
+[type]:[nt store] [Trav]:[Ptr] [order]:[rand]
+work set size: [268435392](bytes)
+unit num: [4194304](op)
+Latency: [36](ns)
+Bandwidth: [27777777](ops)
+Bandwidth: [1777](MB/s)
+---------------------
+-------result--------
+[type]:[clf_load] [Trav]:[Ptr] [order]:[rand]
+work set size: [268435392](bytes)
+unit num: [4194304](op)
+Latency: [201](ns)
+Bandwidth: [4975124](ops)
+Bandwidth: [318](MB/s)
+---------------------
+-------result--------
+[type]:[load] [Trav]:[Ptr] [order]:[rand]
+work set size: [268435392](bytes)
+unit num: [4194304](op)
+Latency: [204](ns)
+Bandwidth: [4901960](ops)
+Bandwidth: [313](MB/s)
+---------------------
